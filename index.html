@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Origami Návody – Skládejte z papíru</title>
+    <title>Origami Návody – 3D Skládejte z papíru</title>
     <style>
         :root {
             --primary: #e8833a;
@@ -95,6 +95,7 @@
             align-items: center;
             justify-content: center;
             min-height: 220px;
+            position: relative;
         }
 
         .card-preview svg { max-width: 100%; height: auto; }
@@ -107,24 +108,10 @@
             flex-direction: column;
         }
 
-        .card-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 0.4rem;
-        }
+        .card-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .card-desc { font-size: 0.95rem; color: var(--text-light); margin-bottom: 1rem; flex: 1; }
 
-        .card-desc {
-            font-size: 0.95rem;
-            color: var(--text-light);
-            margin-bottom: 1rem;
-            flex: 1;
-        }
-
-        .card-meta {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+        .card-meta { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 
         .badge {
             display: inline-flex;
@@ -139,6 +126,12 @@
         .badge-easy { background: #e8f5e9; color: #2e7d32; }
         .badge-medium { background: #fff3e0; color: #e65100; }
         .badge-steps { background: #e3f2fd; color: #1565c0; }
+        .badge-3d {
+            background: linear-gradient(135deg, #e8833a, #c96a25);
+            color: white;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
 
         .card-cta {
             display: inline-flex;
@@ -171,7 +164,7 @@
 <header>
     <span class="logo-icon">&#x1F4D0;</span>
     <h1>Origami Návody</h1>
-    <p>Vyberte si origami a skládejte podle animovaného návodu</p>
+    <p>Interaktivní 3D návody – skládejte z papíru</p>
 </header>
 
 <div class="container">
@@ -179,7 +172,7 @@
 
     <div class="cards">
 
-        <!-- Karta: Pes (obličej) -->
+        <!-- Karta: Pes -->
         <a href="pes.html" class="card">
             <div class="card-preview" style="background: #fef9f4;">
                 <svg viewBox="0 0 200 200" width="180" height="180">
@@ -201,10 +194,11 @@
                 <div class="card-title">Origami Pes</div>
                 <div class="card-desc">Roztomilý obličej pejska s ušima. Ideální první origami pro děti i dospělé.</div>
                 <div class="card-meta">
+                    <span class="badge badge-3d">3D</span>
                     <span class="badge badge-easy">Snadné</span>
                     <span class="badge badge-steps">8 kroků</span>
                 </div>
-                <div class="card-cta">Otevřít návod &rarr;</div>
+                <div class="card-cta">Otevřít 3D návod &rarr;</div>
             </div>
         </a>
 
@@ -212,25 +206,17 @@
         <a href="jezevcik.html" class="card">
             <div class="card-preview" style="background: #f4f8fe;">
                 <svg viewBox="0 0 260 160" width="220" height="140">
-                    <!-- Tělo jezevčíka - dlouhý tvar -->
                     <polygon points="55,60 200,60 200,100 55,100" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Hlava -->
                     <polygon points="55,60 55,105 20,85 20,55" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Čumák -->
                     <polygon points="20,55 20,75 5,68" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Ucho -->
                     <polygon points="35,55 50,55 42,42" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Ocas -->
                     <polygon points="200,60 200,75 225,45" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Nohy -->
                     <rect x="65" y="100" width="12" height="25" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5"/>
                     <rect x="90" y="100" width="12" height="25" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5"/>
                     <rect x="155" y="100" width="12" height="25" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5"/>
                     <rect x="180" y="100" width="12" height="25" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5"/>
-                    <!-- Oko -->
                     <ellipse cx="30" cy="65" rx="4" ry="5" fill="#2d2926"/>
                     <ellipse cx="31" cy="64" rx="1.5" ry="1.5" fill="white" opacity="0.85"/>
-                    <!-- Nos -->
                     <ellipse cx="8" cy="67" rx="4" ry="3" fill="#2d2926"/>
                 </svg>
             </div>
@@ -238,10 +224,11 @@
                 <div class="card-title">Origami Jezevčík</div>
                 <div class="card-desc">Celé tělo jezevčíka s dlouhým trupem, nožičkami a ocáskem. Pro mírně pokročilé.</div>
                 <div class="card-meta">
+                    <span class="badge badge-3d">3D</span>
                     <span class="badge badge-medium">Střední</span>
                     <span class="badge badge-steps">9 kroků</span>
                 </div>
-                <div class="card-cta">Otevřít návod &rarr;</div>
+                <div class="card-cta">Otevřít 3D návod &rarr;</div>
             </div>
         </a>
 
@@ -249,7 +236,7 @@
 </div>
 
 <footer>
-    <p>Origami Návody &bull; Stačí papír a chuť skládat</p>
+    <p>Origami Návody &bull; Interaktivní 3D engine &bull; Stačí papír a chuť skládat</p>
 </footer>
 
 </body>

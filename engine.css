@@ -1,0 +1,334 @@
+/* engine.css – Shared styles for Origami 3D Tutorial Engine */
+
+:root {
+    --primary: #e8833a;
+    --primary-dark: #c96a25;
+    --bg: #faf6f1;
+    --card-bg: #ffffff;
+    --text: #2d2926;
+    --text-light: #6b5e56;
+    --border: #e8ddd4;
+    --accent: #4a90a4;
+    --success: #5a9a6b;
+    --paper: #f5e6d3;
+    --paper-back: #f0dcc5;
+    --paper-fold: #e8d5be;
+    --paper-shadow: #d4c0a8;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+/* === HEADER === */
+header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    text-align: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.03) 20px, rgba(255,255,255,0.03) 40px);
+}
+
+header h1 { font-size: 2.2rem; font-weight: 700; position: relative; margin-bottom: 0.3rem; }
+header p { font-size: 1.05rem; opacity: 0.9; position: relative; }
+.header-icon { font-size: 2.8rem; margin-bottom: 0.4rem; display: block; position: relative; }
+
+.back-link {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    color: rgba(255,255,255,0.9); text-decoration: none; font-size: 0.95rem;
+    position: relative; margin-bottom: 0.5rem;
+}
+.back-link:hover { color: white; }
+
+/* === 3D VIEWER === */
+#viewer3d {
+    background: linear-gradient(180deg, #f5f0ea 0%, #ede6dc 100%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    cursor: grab;
+    min-height: 380px;
+    overflow: hidden;
+}
+
+#viewer3d:active { cursor: grabbing; }
+
+#viewer3d canvas {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+.viewer-controls {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+}
+
+.viewer-btn {
+    background: rgba(255,255,255,0.85);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.2s;
+    backdrop-filter: blur(8px);
+}
+
+.viewer-btn:hover { background: white; }
+
+.viewer-hint {
+    position: absolute;
+    bottom: 14px;
+    left: 14px;
+    font-size: 0.75rem;
+    color: var(--text-light);
+    opacity: 0.7;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* === LAYOUT === */
+.container { max-width: 800px; margin: 0 auto; padding: 1.5rem; }
+
+.intro {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.intro h2 { color: var(--primary-dark); margin-bottom: 0.75rem; font-size: 1.3rem; }
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.8rem;
+    margin-top: 1rem;
+}
+
+.info-item { text-align: center; padding: 0.65rem; background: var(--bg); border-radius: 12px; }
+.info-item .label { font-size: 0.78rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+.info-item .value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+
+/* === STEP NAVIGATION === */
+.step-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.step-nav-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+}
+
+.step-nav-btn:hover { background: var(--primary-dark); }
+.step-nav-btn:active { transform: scale(0.97); }
+.step-nav-btn:disabled { background: var(--border); color: var(--text-light); cursor: not-allowed; }
+
+.step-nav-progress {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.step-nav-bar {
+    flex: 1;
+    background: var(--border);
+    border-radius: 20px;
+    height: 6px;
+    overflow: hidden;
+}
+
+.step-nav-fill {
+    background: linear-gradient(90deg, var(--primary), var(--success));
+    height: 100%;
+    border-radius: 20px;
+    width: 0%;
+    transition: width 0.4s ease;
+}
+
+.step-nav-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+}
+
+/* === STEP CARDS === */
+.step {
+    background: var(--card-bg);
+    border-radius: 16px;
+    margin-bottom: 1.25rem;
+    border: 2px solid var(--border);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.2s ease;
+}
+
+.step.active {
+    border-color: var(--primary);
+    box-shadow: 0 4px 20px rgba(232,131,58,0.15);
+}
+
+.step.completed { border-color: var(--success); }
+
+.step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+}
+
+.step-header:hover { background: rgba(0,0,0,0.015); }
+
+.step-number {
+    background: var(--border);
+    color: var(--text-light);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.step.active .step-number { background: var(--primary); color: white; }
+.step.completed .step-number { background: var(--success); color: white; }
+
+.step-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    flex: 1;
+    color: var(--text-light);
+    transition: color 0.3s;
+}
+
+.step.active .step-title,
+.step.completed .step-title { color: var(--text); }
+
+.step-check {
+    width: 26px; height: 26px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.step.completed .step-check { background: var(--success); border-color: var(--success); }
+.step-check svg { width: 14px; height: 14px; opacity: 0; transition: opacity 0.3s ease; }
+.step.completed .step-check svg { opacity: 1; }
+
+.step-content {
+    padding: 0 1.25rem 1.25rem;
+    display: none;
+}
+
+.step.active .step-content { display: block; }
+
+.step-description { font-size: 0.95rem; color: var(--text); line-height: 1.7; }
+.step-description p { margin-bottom: 0.4rem; }
+
+.tip {
+    background: #fff8e1;
+    border-left: 4px solid #f9a825;
+    padding: 0.65rem 0.9rem;
+    border-radius: 0 8px 8px 0;
+    margin-top: 0.7rem;
+    font-size: 0.85rem;
+}
+
+.tip strong { color: #e65100; }
+
+/* === FINAL SECTION === */
+.final-section {
+    background: linear-gradient(135deg, var(--success), #4a8a5b);
+    color: white;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    margin: 1.5rem 0;
+    display: none;
+}
+
+.final-section.visible { display: block; }
+.final-section h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.final-section p { opacity: 0.9; font-size: 1rem; }
+
+.reset-btn {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.4);
+    padding: 0.5rem 1.25rem;
+    border-radius: 25px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 0.75rem;
+    transition: background 0.3s ease;
+}
+
+.reset-btn:hover { background: rgba(255,255,255,0.3); }
+
+/* === FOOTER === */
+footer { text-align: center; padding: 1.5rem 1rem; color: var(--text-light); font-size: 0.85rem; }
+footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+footer a:hover { text-decoration: underline; }
+
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+    header h1 { font-size: 1.6rem; }
+    header { padding: 1.5rem 1rem; }
+    #viewer3d { min-height: 280px; }
+    .container { padding: 1rem; }
+    .step-header { padding: 0.85rem 1rem; }
+    .step-content { padding: 0 1rem 1rem; }
+    .step-nav { flex-wrap: wrap; }
+    .step-nav-btn { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+}

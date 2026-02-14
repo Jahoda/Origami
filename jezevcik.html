@@ -3,872 +3,395 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Origami Jezevčík – Návod krok za krokem</title>
+    <title>Origami Jezevčík – 3D Návod krok za krokem</title>
+    <link rel="stylesheet" href="engine.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
+        }
+    }
+    </script>
     <style>
         :root {
             --primary: #6b4c9a;
             --primary-dark: #533a7d;
-            --bg: #f7f4fa;
-            --card-bg: #ffffff;
-            --text: #2d2926;
-            --text-light: #6b5e56;
-            --border: #e0dae8;
-            --accent: #4a90a4;
-            --success: #5a9a6b;
-            --paper: #f5e6d3;
-            --paper-back: #f0dcc5;
-            --paper-fold: #e8d5be;
-            --paper-shadow: #d4c0a8;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-        }
-
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            text-align: center;
-            padding: 2.5rem 1rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        header::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.03) 20px, rgba(255,255,255,0.03) 40px);
-        }
-
-        header h1 { font-size: 2.2rem; font-weight: 700; position: relative; margin-bottom: 0.5rem; }
-        header p { font-size: 1.1rem; opacity: 0.9; position: relative; }
-        .dog-icon { font-size: 3rem; margin-bottom: 0.5rem; display: block; position: relative; }
-
-        .back-link {
-            display: inline-flex; align-items: center; gap: 0.4rem;
-            color: rgba(255,255,255,0.9); text-decoration: none; font-size: 0.95rem;
-            position: relative; margin-bottom: 0.75rem;
-        }
-        .back-link:hover { color: white; }
-
-        .container { max-width: 800px; margin: 0 auto; padding: 1.5rem; }
-
-        .intro {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-        }
-
-        .intro h2 { color: var(--primary-dark); margin-bottom: 0.75rem; font-size: 1.3rem; }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-
-        .info-item { text-align: center; padding: 0.75rem; background: var(--bg); border-radius: 12px; }
-        .info-item .label { font-size: 0.8rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.25rem; }
-        .info-item .value { font-size: 1rem; font-weight: 600; color: var(--text); }
-
-        .progress-bar {
-            background: var(--border);
-            border-radius: 20px;
-            height: 8px;
-            margin: 1.5rem 0;
-            overflow: hidden;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, var(--primary), var(--success));
-            height: 100%;
-            border-radius: 20px;
-            width: 0%;
-            transition: width 0.4s ease;
-        }
-
-        .step {
-            background: var(--card-bg);
-            border-radius: 16px;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border);
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-            overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .step:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        }
-
-        .step.completed { border-color: var(--success); }
-
-        .step-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.25rem 1.5rem;
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .step-number {
-            background: var(--primary);
-            color: white;
-            width: 40px; height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-            transition: background 0.3s ease;
-        }
-
-        .step.completed .step-number { background: var(--success); }
-        .step-title { font-size: 1.15rem; font-weight: 600; flex: 1; }
-
-        .step-check {
-            width: 28px; height: 28px;
-            border: 2px solid var(--border);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .step.completed .step-check { background: var(--success); border-color: var(--success); }
-        .step-check svg { width: 16px; height: 16px; opacity: 0; transition: opacity 0.3s ease; }
-        .step.completed .step-check svg { opacity: 1; }
-
-        .step-content { padding: 0 1.5rem 1.5rem; }
-
-        .step-illustration {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 220px;
-            position: relative;
-        }
-
-        .step-illustration svg { max-width: 100%; height: auto; }
-
-        .replay-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            margin-top: 0.75rem;
-            padding: 0.4rem 1rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .replay-btn:hover { background: var(--primary-dark); }
-        .replay-btn svg { width: 14px; height: 14px; }
-
-        .step-description { font-size: 1rem; color: var(--text); line-height: 1.7; }
-        .step-description p { margin-bottom: 0.5rem; }
-
-        .tip {
-            background: #f3e5f5;
-            border-left: 4px solid #9c27b0;
-            padding: 0.75rem 1rem;
-            border-radius: 0 8px 8px 0;
-            margin-top: 0.75rem;
-            font-size: 0.9rem;
-        }
-
+        .tip { background: #f3e5f5; border-left-color: #9c27b0; }
         .tip strong { color: #6a1b9a; }
-
-        .final-section {
-            background: linear-gradient(135deg, var(--success), #4a8a5b);
-            color: white;
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-            margin: 2rem 0;
-        }
-
-        .final-section h2 { font-size: 1.6rem; margin-bottom: 0.75rem; }
-        .final-section p { opacity: 0.9; font-size: 1.05rem; }
-
-        .reset-btn {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 2px solid rgba(255,255,255,0.4);
-            padding: 0.6rem 1.5rem;
-            border-radius: 25px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 1rem;
-            transition: background 0.3s ease;
-        }
-
-        .reset-btn:hover { background: rgba(255,255,255,0.3); }
-
-        footer { text-align: center; padding: 2rem 1rem; color: var(--text-light); font-size: 0.85rem; }
-        footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
-        footer a:hover { text-decoration: underline; }
-
-        @media (max-width: 600px) {
-            header h1 { font-size: 1.6rem; }
-            .container { padding: 1rem; }
-            .step-header { padding: 1rem; }
-            .step-content { padding: 0 1rem 1rem; }
-            .step-illustration { min-height: 180px; padding: 1rem; }
-        }
     </style>
 </head>
 <body>
 
 <header>
     <a href="index.html" class="back-link">&larr; Zpět na výběr</a>
-    <span class="dog-icon">&#x1F9AB;</span>
+    <span class="header-icon">&#x1F9AB;</span>
     <h1>Origami Jezevčík</h1>
-    <p>Celotělový jezevčík krok za krokem</p>
+    <p>Interaktivní 3D návod – celotělový jezevčík</p>
 </header>
+
+<!-- 3D Viewer -->
+<div id="viewer3d">
+    <div class="viewer-controls">
+        <button class="viewer-btn" data-action="reset-cam">Reset kamery</button>
+        <button class="viewer-btn" data-action="auto-rotate">Rotace</button>
+    </div>
+    <span class="viewer-hint">Myší otáčejte &middot; Kolečkem přibližujte</span>
+</div>
 
 <div class="container">
 
     <div class="intro">
         <h2>Co budete potřebovat</h2>
-        <p>K složení jezevčíka potřebujete jeden čtvercový list papíru. Doporučujeme hnědý nebo oranžový papír pro realistický vzhled.</p>
+        <p>Jeden čtvercový list papíru. Doporučujeme hnědý nebo oranžový papír pro realistický vzhled.</p>
         <div class="info-grid">
             <div class="info-item"><div class="label">Obtížnost</div><div class="value">Střední</div></div>
             <div class="info-item"><div class="label">Papír</div><div class="value">15 &times; 15 cm</div></div>
-            <div class="info-item"><div class="label">Počet kroků</div><div class="value">9 kroků</div></div>
+            <div class="info-item"><div class="label">Kroky</div><div class="value">9</div></div>
             <div class="info-item"><div class="label">Věk</div><div class="value">8+</div></div>
         </div>
     </div>
 
-    <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
+    <!-- Step Navigation -->
+    <div class="step-nav">
+        <button class="step-nav-btn" id="btnPrev" disabled>&larr; Zpět</button>
+        <div class="step-nav-progress">
+            <div class="step-nav-bar"><div class="step-nav-fill" id="progressFill"></div></div>
+            <span class="step-nav-label" id="stepLabel">1 / 9</span>
+        </div>
+        <button class="step-nav-btn" id="btnNext">Další &rarr;</button>
     </div>
 
-    <!-- ==================== KROK 1 ==================== -->
-    <div class="step" data-step="1">
-        <div class="step-header">
-            <div class="step-number">1</div>
-            <div class="step-title">Přeložte čtverec na trojúhelník</div>
-            <div class="step-check" onclick="event.stopPropagation(); markStep(1)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+    <!-- Step Cards -->
+    <div id="stepsContainer">
+
+        <div class="step active" data-step="0">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-title">Přeložte čtverec na trojúhelník</div>
+                <div class="step-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            <div class="step-content">
+                <div class="step-description">
+                    <p>Položte papír barevnou stranou dolů. <strong>Přeložte ho po úhlopříčce</strong> – levý horní roh na pravý dolní.</p>
+                    <p>Pečlivě přihlaďte přehyb. Vznikne trojúhelník.</p>
+                </div>
             </div>
         </div>
-        <div class="step-content">
-            <div class="step-illustration">
-                <svg id="anim1" viewBox="0 0 320 200" width="320" height="200">
-                    <defs>
-                        <marker id="ah1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#6b4c9a"/></marker>
-                    </defs>
-                    <!-- Čtverec -->
-                    <rect x="30" y="30" width="120" height="120" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2" rx="1"/>
-                    <!-- Úhlopříčka -->
-                    <line x1="30" y1="30" x2="150" y2="150" stroke="#6b4c9a" stroke-width="1" stroke-dasharray="4,3"/>
-                    <!-- Šipka -->
-                    <path d="M185 90 L215 90" stroke="#6b5e56" stroke-width="2" fill="none" marker-end="url(#ah1)"/>
-                    <!-- Výsledný trojúhelník -->
-                    <polygon points="240,30 240,150 360,150" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2" opacity="0">
-                        <animate attributeName="opacity" dur="1s" begin="0.5s" values="0;1" fill="freeze"/>
-                    </polygon>
-                    <!-- Horní polovina se překlopí -->
-                    <polygon points="30,30 150,30 150,150" fill="#f0dcc5" stroke="#d4c0a8" stroke-width="2">
-                        <animate attributeName="points" dur="1.5s" begin="0.5s" fill="freeze"
-                            values="30,30 150,30 150,150;
-                                    90,90 150,90 150,150;
-                                    150,150 150,90 150,150;
-                                    150,150 150,30 150,150"/>
-                        <animate attributeName="opacity" dur="1.5s" begin="0.5s" fill="freeze" values="1;0.7;0.3;0"/>
-                    </polygon>
-                    <text x="90" y="180" text-anchor="middle" font-size="11" fill="#6b5e56">Čtverec</text>
-                    <text x="300" y="180" text-anchor="middle" font-size="11" fill="#6b5e56" opacity="0">
-                        Trojúhelník
-                        <animate attributeName="opacity" dur="0.3s" begin="2s" values="0;1" fill="freeze"/>
-                    </text>
-                </svg>
-                <button class="replay-btn" onclick="replayAnimation(1)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                    Přehrát znovu
-                </button>
+
+        <div class="step" data-step="1">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div class="step-title">Rozložte a složte dračí základ</div>
+                <div class="step-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
             </div>
-            <div class="step-description">
-                <p>Položte čtvercový papír před sebe barevnou stranou dolů. <strong>Přeložte ho po úhlopříčce</strong> – levý horní roh na pravý dolní.</p>
-                <p>Pečlivě přihlaďte přehyb. Vznikne trojúhelník.</p>
+            <div class="step-content">
+                <div class="step-description">
+                    <p>Rozložte trojúhelník zpět na čtverec. Otočte jako kosočtverec (roh nahoru).</p>
+                    <p><strong>Přeložte levé hrany ke středové linii.</strong> Vznikne tvar draka.</p>
+                    <div class="tip"><strong>Tip:</strong> Hrany musí přesně dosednout na středovou linii pro symetrický základ.</div>
+                </div>
             </div>
         </div>
+
+        <div class="step" data-step="2">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div class="step-title">Přeložte napůl podélně</div>
+                <div class="step-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            <div class="step-content">
+                <div class="step-description">
+                    <p><strong>Přeložte celý tvar napůl podél středové osy</strong> – spodní na horní. Hrana přehybu bude dole.</p>
+                    <p>Vznikne dlouhý úzký trojúhelníkový tvar.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" data-step="3">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div class="step-title">Otočte na šířku – tělo jezevčíka</div>
+                <div class="step-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            <div class="step-content">
+                <div class="step-description">
+                    <p><strong>Otočte vodorovně.</strong> Ostrá špička vlevo (hlava), tupý konec vpravo (ocas).</p>
+                    <p>Přehyb (zavřená hrana) nahoře, otevřené vrstvy dole.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" data-step="4">
+            <div class="step-header">
+                <div class="step-number">5</div>
+                <div class="step-title">Vytvarujte krk (reverzní přehyb)</div>
+                <div class="step-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            <div class="step-content">
+                <div class="step-description">
+                    <p>Provedeme <strong>reverzní přehyb</strong> na levém konci. Rozevřete vrstvy a vtlačte špičku nahoru.</p>
+                    <p>Vznikne krk jezevčíka trčící šikmo nahoru z těla.</p>
+                    <div class="tip"><strong>Tip:</strong> Špičku si nejprve předehněte, pak reverzní přehyb půjde snadněji.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" data-step="5">
+            <div class="step-header">
+                <div class="step-number">6</div>
+                <div class="step-title">Vytvarujte hlavu (druhý reverzní přehyb)</div>
+                <div class="step-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            <div class="step-content">
+                <div class="step-description">
+                    <p>Na vrcholu krku <strong>ohnete špičku dopředu</strong>.</p>
+                    <p>Vznikne hlava s typickým dlouhým čumákem, směřující vodorovně nebo mírně dolů.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" data-step="6">
+            <div class="step-header">
+                <div class="step-number">7</div>
+                <div class="step-title">Vytvarujte ocas</div>
+                <div class="step-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            <div class="step-content">
+                <div class="step-description">
+                    <p>Na pravém konci těla <strong>reverzní přehyb nahoru</strong> – vesele trčící ocásek!</p>
+                    <p>Jezevčíci mají typický vztyčený ocásek.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" data-step="7">
+            <div class="step-header">
+                <div class="step-number">8</div>
+                <div class="step-title">Přehněte nožičky</div>
+                <div class="step-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            <div class="step-content">
+                <div class="step-description">
+                    <p>Na spodní hraně vytvořte <strong>4 malé přehyby dolů</strong> – 2 vpředu, 2 vzadu.</p>
+                    <p>Nožičky krátké (typické pro jezevčíka!). Asi 1,5–2 cm.</p>
+                    <div class="tip"><strong>Tip:</strong> Rozevřete vrstvy u spodní hrany a přeložte obdélníčky dolů. Jezevčík bude stát!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" data-step="8">
+            <div class="step-header">
+                <div class="step-number">9</div>
+                <div class="step-title">Dokreslete detaily – hotovo!</div>
+                <div class="step-check">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            <div class="step-content">
+                <div class="step-description">
+                    <p>Dokreslete <strong>oko, nos, ucho</strong> a přidejte červený obojek!</p>
+                    <p>Použijte hnědý nebo oranžový papír pro realistického jezevčíka.</p>
+                    <div class="tip"><strong>Nápad:</strong> Zkuste černý papír s bílou fixou pro elegantního jezevčíka!</div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <!-- ==================== KROK 2 ==================== -->
-    <div class="step" data-step="2">
-        <div class="step-header">
-            <div class="step-number">2</div>
-            <div class="step-title">Rozložte a složte dračí základ (kite base)</div>
-            <div class="step-check" onclick="event.stopPropagation(); markStep(2)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-        </div>
-        <div class="step-content">
-            <div class="step-illustration">
-                <svg id="anim2" viewBox="0 0 300 260" width="300" height="260">
-                    <defs>
-                        <marker id="ah2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#6b4c9a"/></marker>
-                    </defs>
-                    <!-- Kosočtverec s přehybem -->
-                    <polygon points="150,20 250,130 150,240 50,130" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Osa přehybu -->
-                    <line x1="150" y1="20" x2="150" y2="240" stroke="#6b4c9a" stroke-width="1.5" stroke-dasharray="5,3"/>
-                    <!-- Levá hrana se přehýbá ke středu -->
-                    <polygon points="150,20 50,130 150,240" fill="#f0dcc5" stroke="#d4c0a8" stroke-width="1" opacity="0.5"/>
-                    <!-- Animovaná levá hrana -->
-                    <line x1="150" y1="20" x2="50" y2="130" stroke="#e8d5be" stroke-width="3">
-                        <animate attributeName="x2" dur="1.5s" begin="0.5s" values="50;100;150" fill="freeze"/>
-                        <animate attributeName="y2" dur="1.5s" begin="0.5s" values="130;75;130" fill="freeze"/>
-                    </line>
-                    <!-- Animovaná spodní levá hrana -->
-                    <line x1="50" y1="130" x2="150" y2="240" stroke="#e8d5be" stroke-width="3">
-                        <animate attributeName="x1" dur="1.5s" begin="0.5s" values="50;100;150" fill="freeze"/>
-                        <animate attributeName="y1" dur="1.5s" begin="0.5s" values="130;195;130" fill="freeze"/>
-                    </line>
-                    <!-- Výsledek - přeložené hrany u středu -->
-                    <line x1="150" y1="20" x2="150" y2="130" stroke="#d4c0a8" stroke-width="2" opacity="0">
-                        <animate attributeName="opacity" dur="0.3s" begin="2s" values="0;1" fill="freeze"/>
-                    </line>
-                    <!-- Šipky -->
-                    <path d="M65 80 Q100 60 140 80" stroke="#6b4c9a" stroke-width="1.5" fill="none" marker-end="url(#ah2)">
-                        <animate attributeName="opacity" dur="1.5s" begin="0s" values="0.8;0.8;0;0" fill="freeze"/>
-                    </path>
-                    <path d="M65 180 Q100 200 140 180" stroke="#6b4c9a" stroke-width="1.5" fill="none" marker-end="url(#ah2)">
-                        <animate attributeName="opacity" dur="1.5s" begin="0s" values="0.8;0.8;0;0" fill="freeze"/>
-                    </path>
-                    <text x="150" y="255" text-anchor="middle" font-size="11" fill="#6b5e56">Dračí základ (kite base)</text>
-                </svg>
-                <button class="replay-btn" onclick="replayAnimation(2)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                    Přehrát znovu
-                </button>
-            </div>
-            <div class="step-description">
-                <p>Rozložte trojúhelník zpět na čtverec. Otočte papír jako kosočtverec (roh nahoru).</p>
-                <p><strong>Přeložte levou horní hranu a levou dolní hranu ke středové linii přehybu.</strong> Vznikne tvar připomínající draka (nebo šipku).</p>
-                <div class="tip"><strong>Tip:</strong> Hrany musí přesně dosednout na středovou linii. Tak vznikne symetrický základ.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== KROK 3 ==================== -->
-    <div class="step" data-step="3">
-        <div class="step-header">
-            <div class="step-number">3</div>
-            <div class="step-title">Přeložte napůl podélně</div>
-            <div class="step-check" onclick="event.stopPropagation(); markStep(3)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-        </div>
-        <div class="step-content">
-            <div class="step-illustration">
-                <svg id="anim3" viewBox="0 0 300 240" width="300" height="240">
-                    <defs>
-                        <marker id="ah3" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#6b4c9a"/></marker>
-                    </defs>
-                    <!-- Dračí základ (kite) - horní polovina -->
-                    <polygon points="150,20 250,130 150,130" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Dračí základ - spodní polovina (bude se přehýbat) -->
-                    <polygon points="150,130 250,130 150,240" fill="#f0dcc5" stroke="#d4c0a8" stroke-width="2">
-                        <animate attributeName="points" dur="1.8s" begin="0.5s" fill="freeze"
-                            values="150,130 250,130 150,240;
-                                    150,130 250,130 150,185;
-                                    150,130 250,130 150,130;
-                                    150,130 250,130 150,20"/>
-                    </polygon>
-                    <!-- Středová čára přehybu -->
-                    <line x1="150" y1="130" x2="250" y2="130" stroke="#6b4c9a" stroke-width="1.5" stroke-dasharray="5,3"/>
-                    <!-- Šipka -->
-                    <path d="M170 210 Q130 180 170 140" stroke="#6b4c9a" stroke-width="2" fill="none" marker-end="url(#ah3)">
-                        <animate attributeName="opacity" dur="1.8s" begin="0s" values="0.8;0.8;0;0;0" fill="freeze"/>
-                    </path>
-                    <!-- Popisek -->
-                    <text x="200" y="230" text-anchor="middle" font-size="11" fill="#6b5e56" opacity="0">
-                        Dlouhý úzký tvar
-                        <animate attributeName="opacity" dur="0.3s" begin="2.3s" values="0;1" fill="freeze"/>
-                    </text>
-                </svg>
-                <button class="replay-btn" onclick="replayAnimation(3)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                    Přehrát znovu
-                </button>
-            </div>
-            <div class="step-description">
-                <p><strong>Přeložte celý tvar napůl podél středové osy</strong> – spodní část přiložte na horní. Hrana přehybu bude dole.</p>
-                <p>Vznikne dlouhý úzký trojúhelníkový tvar – základ budoucího jezevčíka.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== KROK 4 ==================== -->
-    <div class="step" data-step="4">
-        <div class="step-header">
-            <div class="step-number">4</div>
-            <div class="step-title">Otočte na šířku – tělo jezevčíka</div>
-            <div class="step-check" onclick="event.stopPropagation(); markStep(4)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-        </div>
-        <div class="step-content">
-            <div class="step-illustration">
-                <svg id="anim4" viewBox="0 0 320 180" width="320" height="180">
-                    <defs>
-                        <marker id="ah4" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#6b4c9a"/></marker>
-                    </defs>
-                    <!-- Rotující tvar -->
-                    <g>
-                        <animateTransform attributeName="transform" type="rotate" from="0 160 90" to="-90 160 90" dur="1.5s" begin="0.5s" fill="freeze"/>
-                        <polygon points="160,10 280,90 160,90" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                        <polygon points="160,10 280,90 160,90" fill="#f0dcc5" stroke="#d4c0a8" stroke-width="2" opacity="0.5"/>
-                    </g>
-                    <!-- Šipka rotace -->
-                    <path d="M290 40 Q310 70 295 100" stroke="#6b4c9a" stroke-width="2" fill="none" marker-end="url(#ah4)">
-                        <animate attributeName="opacity" dur="2s" begin="0s" values="0.8;0.8;0;0" fill="freeze"/>
-                    </path>
-                    <!-- Popisek -->
-                    <text x="160" y="170" text-anchor="middle" font-size="11" fill="#6b5e56" opacity="0">
-                        Špička vlevo = hlava, vpravo = ocas
-                        <animate attributeName="opacity" dur="0.3s" begin="2s" values="0;1" fill="freeze"/>
-                    </text>
-                </svg>
-                <button class="replay-btn" onclick="replayAnimation(4)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                    Přehrát znovu
-                </button>
-            </div>
-            <div class="step-description">
-                <p><strong>Otočte tvar tak, aby ležel vodorovně.</strong> Ostrá špička směřuje doleva (bude z ní hlava), tupý konec doprava (bude ocas).</p>
-                <p>Přehyb (zavřená hrana) by měl být nahoře, otevřené vrstvy dole.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== KROK 5 ==================== -->
-    <div class="step" data-step="5">
-        <div class="step-header">
-            <div class="step-number">5</div>
-            <div class="step-title">Vytvarujte krk (reverzní přehyb)</div>
-            <div class="step-check" onclick="event.stopPropagation(); markStep(5)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-        </div>
-        <div class="step-content">
-            <div class="step-illustration">
-                <svg id="anim5" viewBox="0 0 320 200" width="320" height="200">
-                    <defs>
-                        <marker id="ah5" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#6b4c9a"/></marker>
-                    </defs>
-                    <!-- Tělo - vodorovný tvar -->
-                    <polygon points="80,70 280,70 280,110 80,110" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Levý konec - špička, budoucí hlava -->
-                    <polygon points="80,70 80,110 40,90" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Animovaný krk - špička se zvedne nahoru -->
-                    <polygon points="80,70 80,110 40,90" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2">
-                        <animate attributeName="points" dur="1.8s" begin="0.8s" fill="freeze"
-                            values="80,70 80,110 40,90;
-                                    80,70 80,100 50,60;
-                                    80,70 80,90 55,40;
-                                    80,70 80,80 50,30"/>
-                    </polygon>
-                    <!-- Přehybová linie -->
-                    <line x1="80" y1="70" x2="80" y2="110" stroke="#6b4c9a" stroke-width="1.5" stroke-dasharray="4,3"/>
-                    <!-- Šipka nahoru -->
-                    <path d="M45 100 Q30 70 50 42" stroke="#6b4c9a" stroke-width="2" fill="none" marker-end="url(#ah5)">
-                        <animate attributeName="opacity" dur="2.5s" begin="0s" values="0.8;0.8;0;0;0" fill="freeze"/>
-                    </path>
-                    <!-- Popis -->
-                    <text x="55" y="25" font-size="11" fill="#6b4c9a" font-weight="600" opacity="0">
-                        krk
-                        <animate attributeName="opacity" dur="0.3s" begin="2.6s" values="0;1" fill="freeze"/>
-                    </text>
-                    <text x="180" y="95" text-anchor="middle" font-size="11" fill="#6b5e56">tělo</text>
-                </svg>
-                <button class="replay-btn" onclick="replayAnimation(5)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                    Přehrát znovu
-                </button>
-            </div>
-            <div class="step-description">
-                <p>Provedeme <strong>reverzní přehyb</strong> (inside reverse fold) na levém konci. Rozevřete mírně vrstvy a vtlačte špičku dovnitř a směrem nahoru.</p>
-                <p>Tím vznikne krk jezevčíka trčící šikmo nahoru z těla.</p>
-                <div class="tip"><strong>Tip:</strong> Reverzní přehyb znamená, že přehyb „obrátíte" – špička, která směřovala doleva, se ohnula nahoru. Pomáhá si ho nejprve předehnout.</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== KROK 6 ==================== -->
-    <div class="step" data-step="6">
-        <div class="step-header">
-            <div class="step-number">6</div>
-            <div class="step-title">Vytvarujte hlavu (druhý reverzní přehyb)</div>
-            <div class="step-check" onclick="event.stopPropagation(); markStep(6)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-        </div>
-        <div class="step-content">
-            <div class="step-illustration">
-                <svg id="anim6" viewBox="0 0 320 200" width="320" height="200">
-                    <defs>
-                        <marker id="ah6" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#6b4c9a"/></marker>
-                    </defs>
-                    <!-- Tělo -->
-                    <polygon points="80,80 280,80 280,120 80,120" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Krk (statický, už přeložený nahoru) -->
-                    <polygon points="80,80 80,90 50,35" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Špička krku - animace ohnutí dopředu (hlava) -->
-                    <polygon points="50,35 65,57 50,35" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2">
-                        <animate attributeName="points" dur="1.8s" begin="0.8s" fill="freeze"
-                            values="50,35 65,57 50,35;
-                                    50,35 65,57 35,48;
-                                    50,35 65,57 25,55;
-                                    50,35 65,57 20,65"/>
-                    </polygon>
-                    <!-- Přehybová linie na krku -->
-                    <line x1="50" y1="35" x2="65" y2="57" stroke="#6b4c9a" stroke-width="1" stroke-dasharray="3,2" opacity="0.6"/>
-                    <!-- Šipka -->
-                    <path d="M42 38 Q25 42 22 58" stroke="#6b4c9a" stroke-width="2" fill="none" marker-end="url(#ah6)">
-                        <animate attributeName="opacity" dur="2.5s" begin="0s" values="0.8;0.8;0;0;0" fill="freeze"/>
-                    </path>
-                    <!-- Popis -->
-                    <text x="15" y="82" font-size="11" fill="#6b4c9a" font-weight="600" opacity="0">
-                        hlava
-                        <animate attributeName="opacity" dur="0.3s" begin="2.6s" values="0;1" fill="freeze"/>
-                    </text>
-                    <text x="60" y="45" font-size="10" fill="#6b5e56">krk</text>
-                </svg>
-                <button class="replay-btn" onclick="replayAnimation(6)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                    Přehrát znovu
-                </button>
-            </div>
-            <div class="step-description">
-                <p>Na vrcholu krku proveďte <strong>další reverzní přehyb</strong>. Špičku krku ohnete směrem dopředu (doleva).</p>
-                <p>Tím vytvoříte hlavu jezevčíka s typickým dlouhým čumákem. Hlava by měla směřovat vodorovně nebo mírně dolů.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== KROK 7 ==================== -->
-    <div class="step" data-step="7">
-        <div class="step-header">
-            <div class="step-number">7</div>
-            <div class="step-title">Vytvarujte ocas</div>
-            <div class="step-check" onclick="event.stopPropagation(); markStep(7)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-        </div>
-        <div class="step-content">
-            <div class="step-illustration">
-                <svg id="anim7" viewBox="0 0 320 200" width="320" height="200">
-                    <defs>
-                        <marker id="ah7" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#6b4c9a"/></marker>
-                    </defs>
-                    <!-- Tělo -->
-                    <polygon points="80,80 260,80 260,120 80,120" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Krk -->
-                    <polygon points="80,80 80,90 55,40" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Hlava -->
-                    <polygon points="55,40 68,58 25,62" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Pravý konec - budoucí ocas -->
-                    <polygon points="260,80 260,120 290,100" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2" opacity="0.3">
-                        <animate attributeName="opacity" dur="1s" begin="0.5s" values="0.3;0.15;0" fill="freeze"/>
-                    </polygon>
-                    <!-- Animovaný ocas - reverzní přehyb nahoru -->
-                    <polygon points="260,80 260,100 260,80" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2">
-                        <animate attributeName="points" dur="1.8s" begin="0.8s" fill="freeze"
-                            values="260,80 260,100 260,80;
-                                    260,80 260,95 270,60;
-                                    260,80 260,90 280,45;
-                                    260,80 260,88 285,40"/>
-                    </polygon>
-                    <!-- Šipka -->
-                    <path d="M282 105 Q295 80 283 50" stroke="#6b4c9a" stroke-width="2" fill="none" marker-end="url(#ah7)">
-                        <animate attributeName="opacity" dur="2.5s" begin="0s" values="0.8;0.8;0;0;0" fill="freeze"/>
-                    </path>
-                    <!-- Popis -->
-                    <text x="290" y="35" font-size="11" fill="#6b4c9a" font-weight="600" opacity="0">
-                        ocas
-                        <animate attributeName="opacity" dur="0.3s" begin="2.6s" values="0;1" fill="freeze"/>
-                    </text>
-                </svg>
-                <button class="replay-btn" onclick="replayAnimation(7)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                    Přehrát znovu
-                </button>
-            </div>
-            <div class="step-description">
-                <p>Na pravém konci těla proveďte <strong>reverzní přehyb směrem nahoru</strong> – vytvoříte tak ocásek jezevčíka.</p>
-                <p>Ocas by měl vesele trčet šikmo nahoru. Jezevčíci mají typický vztyčený ocásek!</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== KROK 8 ==================== -->
-    <div class="step" data-step="8">
-        <div class="step-header">
-            <div class="step-number">8</div>
-            <div class="step-title">Přehněte nožičky</div>
-            <div class="step-check" onclick="event.stopPropagation(); markStep(8)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-        </div>
-        <div class="step-content">
-            <div class="step-illustration">
-                <svg id="anim8" viewBox="0 0 320 210" width="320" height="210">
-                    <defs>
-                        <marker id="ah8" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#6b4c9a"/></marker>
-                    </defs>
-                    <!-- Tělo -->
-                    <polygon points="75,75 260,75 260,110 75,110" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Krk -->
-                    <polygon points="75,75 75,85 52,38" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Hlava -->
-                    <polygon points="52,38 65,55 22,58" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Ocas -->
-                    <polygon points="260,75 260,85 282,38" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2"/>
-                    <!-- Přední nohy - animace -->
-                    <rect x="85" y="110" width="14" height="0" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5">
-                        <animate attributeName="height" dur="1s" begin="0.5s" values="0;30" fill="freeze"/>
-                    </rect>
-                    <rect x="108" y="110" width="14" height="0" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5">
-                        <animate attributeName="height" dur="1s" begin="0.8s" values="0;30" fill="freeze"/>
-                    </rect>
-                    <!-- Zadní nohy - animace -->
-                    <rect x="220" y="110" width="14" height="0" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5">
-                        <animate attributeName="height" dur="1s" begin="1.1s" values="0;30" fill="freeze"/>
-                    </rect>
-                    <rect x="243" y="110" width="14" height="0" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5">
-                        <animate attributeName="height" dur="1s" begin="1.4s" values="0;30" fill="freeze"/>
-                    </rect>
-                    <!-- Popisky -->
-                    <text x="102" y="160" text-anchor="middle" font-size="10" fill="#6b4c9a" opacity="0">
-                        přední
-                        <animate attributeName="opacity" dur="0.3s" begin="1.8s" values="0;1" fill="freeze"/>
-                    </text>
-                    <text x="237" y="160" text-anchor="middle" font-size="10" fill="#6b4c9a" opacity="0">
-                        zadní
-                        <animate attributeName="opacity" dur="0.3s" begin="2.2s" values="0;1" fill="freeze"/>
-                    </text>
-                </svg>
-                <button class="replay-btn" onclick="replayAnimation(8)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                    Přehrát znovu
-                </button>
-            </div>
-            <div class="step-description">
-                <p>Na spodní hraně těla vytvořte <strong>čtyři malé přehyby směrem dolů</strong> pro nožičky – dva vpředu a dva vzadu.</p>
-                <p>Nožičky by měly být krátké (typické pro jezevčíka!). Stačí přehnout asi 1,5–2 cm papíru.</p>
-                <div class="tip"><strong>Tip:</strong> U spodní hrany rozevřete obě vrstvy papíru a přeložte malé obdélníčky dolů. Jezevčík díky nim bude stát!</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== KROK 9 ==================== -->
-    <div class="step" data-step="9">
-        <div class="step-header">
-            <div class="step-number">9</div>
-            <div class="step-title">Dokreslete detaily – hotovo!</div>
-            <div class="step-check" onclick="event.stopPropagation(); markStep(9)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-            </div>
-        </div>
-        <div class="step-content">
-            <div class="step-illustration">
-                <svg id="anim9" viewBox="0 0 340 220" width="340" height="220">
-                    <defs>
-                        <filter id="shadow9">
-                            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.12"/>
-                        </filter>
-                    </defs>
-
-                    <!-- Dekorace -->
-                    <circle cx="30" cy="30" r="3" fill="#6b4c9a" opacity="0">
-                        <animate attributeName="opacity" dur="0.3s" begin="3.5s" values="0;0.5" fill="freeze"/>
-                        <animate attributeName="cy" dur="2s" begin="3.5s" values="30;45;30" repeatCount="indefinite"/>
-                    </circle>
-                    <circle cx="310" cy="25" r="4" fill="#4a90a4" opacity="0">
-                        <animate attributeName="opacity" dur="0.3s" begin="3.7s" values="0;0.4" fill="freeze"/>
-                        <animate attributeName="cy" dur="2.5s" begin="3.7s" values="25;40;25" repeatCount="indefinite"/>
-                    </circle>
-                    <text x="315" y="110" font-size="14" opacity="0">&#x2B50;
-                        <animate attributeName="opacity" dur="0.3s" begin="4s" values="0;0.4" fill="freeze"/>
-                    </text>
-                    <text x="10" y="130" font-size="16" opacity="0">&#x2728;
-                        <animate attributeName="opacity" dur="0.3s" begin="3.8s" values="0;0.4" fill="freeze"/>
-                    </text>
-
-                    <!-- Finální jezevčík -->
-                    <g filter="url(#shadow9)">
-                        <!-- Tělo -->
-                        <polygon points="85,80 265,80 265,118 85,118" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                        <!-- Krk -->
-                        <polygon points="85,80 85,90 60,42" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2"/>
-                        <!-- Hlava -->
-                        <polygon points="60,42 72,58 28,62" fill="#f5e6d3" stroke="#d4c0a8" stroke-width="2"/>
-                        <!-- Ocas -->
-                        <polygon points="265,80 265,88 290,42" fill="#e8d5be" stroke="#d4c0a8" stroke-width="2"/>
-                        <!-- Nohy -->
-                        <rect x="95" y="118" width="14" height="28" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5"/>
-                        <rect x="118" y="118" width="14" height="28" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5"/>
-                        <rect x="225" y="118" width="14" height="28" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5"/>
-                        <rect x="248" y="118" width="14" height="28" rx="2" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5"/>
-
-                        <!-- Oko - animace -->
-                        <g opacity="0">
-                            <animate attributeName="opacity" dur="0.4s" begin="0.5s" values="0;1" fill="freeze"/>
-                            <ellipse cx="42" cy="52" rx="5" ry="6" fill="#2d2926"/>
-                            <ellipse cx="43" cy="51" rx="2" ry="2" fill="white" opacity="0.85"/>
-                        </g>
-                        <!-- Nos - animace -->
-                        <g opacity="0">
-                            <animate attributeName="opacity" dur="0.4s" begin="1.2s" values="0;1" fill="freeze"/>
-                            <ellipse cx="30" cy="60" rx="5" ry="3.5" fill="#2d2926"/>
-                            <ellipse cx="30" cy="59" rx="2" ry="1" fill="white" opacity="0.3"/>
-                        </g>
-                        <!-- Úsměv - animace -->
-                        <path d="M34 65 Q38 70 42 65" stroke="#2d2926" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0">
-                            <animate attributeName="opacity" dur="0.4s" begin="1.9s" values="0;1" fill="freeze"/>
-                        </path>
-                        <!-- Ucho - animace -->
-                        <polygon points="50,42 62,42 56,32" fill="#e8d5be" stroke="#d4c0a8" stroke-width="1.5" opacity="0">
-                            <animate attributeName="opacity" dur="0.4s" begin="2.6s" values="0;1" fill="freeze"/>
-                        </polygon>
-                        <!-- Obojek - animace -->
-                        <rect x="78" y="72" width="18" height="6" rx="3" fill="#e57373" opacity="0">
-                            <animate attributeName="opacity" dur="0.4s" begin="3.2s" values="0;0.85" fill="freeze"/>
-                        </rect>
-                    </g>
-
-                    <!-- Popisky postupné -->
-                    <text x="42" y="40" font-size="9" fill="#4a90a4" opacity="0">
-                        oko
-                        <animate attributeName="opacity" dur="0.3s" begin="0.5s" values="0;1" fill="freeze"/>
-                        <animate attributeName="opacity" dur="0.3s" begin="1s" values="1;0" fill="freeze"/>
-                    </text>
-                    <text x="18" y="76" font-size="9" fill="#4a90a4" opacity="0">
-                        nos
-                        <animate attributeName="opacity" dur="0.3s" begin="1.2s" values="0;1" fill="freeze"/>
-                        <animate attributeName="opacity" dur="0.3s" begin="1.7s" values="1;0" fill="freeze"/>
-                    </text>
-                    <text x="48" y="25" font-size="9" fill="#4a90a4" opacity="0">
-                        ucho
-                        <animate attributeName="opacity" dur="0.3s" begin="2.6s" values="0;1" fill="freeze"/>
-                        <animate attributeName="opacity" dur="0.3s" begin="3.1s" values="1;0" fill="freeze"/>
-                    </text>
-                    <text x="72" y="68" font-size="9" fill="#e57373" opacity="0">
-                        obojek
-                        <animate attributeName="opacity" dur="0.3s" begin="3.2s" values="0;1" fill="freeze"/>
-                    </text>
-
-                    <!-- Hotovo popisek -->
-                    <text x="170" y="200" text-anchor="middle" font-size="14" fill="#5a9a6b" font-weight="700" opacity="0">
-                        Hotovo!
-                        <animate attributeName="opacity" dur="0.5s" begin="4s" values="0;1" fill="freeze"/>
-                    </text>
-                </svg>
-                <button class="replay-btn" onclick="replayAnimation(9)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-                    Přehrát znovu
-                </button>
-            </div>
-            <div class="step-description">
-                <p>Dokreslete jezevčíkovi <strong>oko, nos, úsměv a ucho</strong>:</p>
-                <p><strong>Oko:</strong> Malý černý ovál na hlavě s bílým odleskem.</p>
-                <p><strong>Nos:</strong> Černý ovál na špičce čumáku.</p>
-                <p><strong>Ucho:</strong> Malý trojúhelníček nad hlavou (nebo nakreslete).</p>
-                <p><strong>Bonus:</strong> Přidejte červený obojek pro extra roztomilost!</p>
-                <div class="tip"><strong>Nápad:</strong> Použijte hnědý nebo oranžový papír pro realistického jezevčíka. Zkuste i černý papír s bílou fixou!</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="final-section" id="finalSection" style="display:none;">
+    <div class="final-section" id="finalSection">
         <h2>Skvělá práce!</h2>
         <p>Dokončili jste všech 9 kroků. Váš origami jezevčík je hotový!</p>
-        <button class="reset-btn" onclick="resetAll()">Začít znovu</button>
+        <button class="reset-btn" id="btnReset">Začít znovu</button>
     </div>
 
 </div>
 
 <footer>
     <p><a href="index.html">&larr; Zpět na výběr origami</a></p>
-    <p>Origami Jezevčík &ndash; Návod pro mírně pokročilé</p>
+    <p>Origami Jezevčík &ndash; 3D Návod</p>
 </footer>
 
-<script>
-    const totalSteps = 9;
-    const completed = new Set();
+<script type="module">
+import { OrigamiEngine } from './engine.js';
 
-    function updateProgress() {
-        const pct = (completed.size / totalSteps) * 100;
-        document.getElementById('progressFill').style.width = pct + '%';
-        if (completed.size === totalSteps) {
-            document.getElementById('finalSection').style.display = 'block';
-            document.getElementById('finalSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        } else {
-            document.getElementById('finalSection').style.display = 'none';
-        }
-    }
+// === 3D Step Data for Origami Dachshund ===
+// Coordinate system: Y up, paper on XZ plane
 
-    function markStep(n) {
-        const stepEl = document.querySelector(`.step[data-step="${n}"]`);
-        if (completed.has(n)) {
-            completed.delete(n);
-            stepEl.classList.remove('completed');
-        } else {
-            completed.add(n);
-            stepEl.classList.add('completed');
-        }
-        updateProgress();
-    }
+const S = 65;
 
-    function resetAll() {
-        completed.clear();
-        document.querySelectorAll('.step').forEach(el => el.classList.remove('completed'));
-        updateProgress();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+const dachshundSteps = [
+    // --- Step 0: Square paper ---
+    {
+        faces: [
+            { verts: [[-S,0,-S], [S,0,-S], [S,0,S]], type: 'front' },
+            { verts: [[-S,0,-S], [S,0,S], [-S,0,S]], type: 'front' },
+        ],
+        foldLine: [[-S,0,-S], [S,0,S]],
+    },
+    // --- Step 1: Kite base (diamond with edges folded to center) ---
+    {
+        faces: [
+            // Right half
+            { verts: [[0,0,-S], [S*0.35,0,0], [0,0,S]], type: 'front' },
+            // Left half
+            { verts: [[0,0,-S], [0,0,S], [-S*0.35,0,0]], type: 'front' },
+            // Folded right flap
+            { verts: [[0,0.3,-S], [0,0.3,S], [S*0.35,0.3,0]], type: 'fold' },
+            // Folded left flap
+            { verts: [[0,0.3,-S], [-S*0.35,0.3,0], [0,0.3,S]], type: 'fold' },
+        ],
+        foldLine: [[0,0,-S], [0,0,S]],
+    },
+    // --- Step 2: Folded in half lengthwise ---
+    {
+        faces: [
+            // Top layer (kite shape folded)
+            { verts: [[0,0,-S], [S*0.35,0,0], [0,0,S]], type: 'front' },
+            // Folded half on top
+            { verts: [[0,0.4,-S], [S*0.35,0.4,0], [0,0.4,S]], type: 'back' },
+        ],
+        foldLine: [[0,0,-S], [S*0.35,0,0]],
+    },
+    // --- Step 3: Rotated horizontal (body shape) ---
+    // Laying on its side, long edge horizontal
+    {
+        faces: [
+            // Body - top
+            { verts: [[-S,0.3,-8], [S*0.35,0.3,-8], [S*0.35,0.3,8], [-S,0.3,8]], type: 'front' },
+            // Body - bottom (slightly wider appearance)
+            { verts: [[-S,0,-8], [-S,0,8], [S*0.35,0,8], [S*0.35,0,-8]], type: 'back' },
+        ],
+        foldLine: null,
+    },
+    // --- Step 4: Neck (reverse fold up on the left) ---
+    {
+        faces: [
+            // Body
+            { verts: [[-30,0,-8], [S*0.35,0,-8], [S*0.35,0,8], [-30,0,8]], type: 'front' },
+            { verts: [[-30,0.3,-8], [-30,0.3,8], [S*0.35,0.3,8], [S*0.35,0.3,-8]], type: 'back' },
+            // Neck (going up)
+            { verts: [[-30,0,-5], [-30,0,5], [-45,35,3], [-45,35,-3]], type: 'fold' },
+            { verts: [[-30,0.3,-5], [-45,35.3,-3], [-45,35.3,3], [-30,0.3,5]], type: 'fold' },
+        ],
+        foldLine: [[-30,0,-8], [-30,0,8]],
+    },
+    // --- Step 5: Head (second reverse fold, forward from neck) ---
+    {
+        faces: [
+            // Body
+            { verts: [[-30,0,-8], [S*0.35,0,-8], [S*0.35,0,8], [-30,0,8]], type: 'front' },
+            { verts: [[-30,0.3,-8], [-30,0.3,8], [S*0.35,0.3,8], [S*0.35,0.3,-8]], type: 'back' },
+            // Neck
+            { verts: [[-30,0,-5], [-30,0,5], [-42,28,3], [-42,28,-3]], type: 'fold' },
+            { verts: [[-30,0.3,-5], [-42,28.3,-3], [-42,28.3,3], [-30,0.3,5]], type: 'fold' },
+            // Head (jutting forward)
+            { verts: [[-42,28,-4], [-42,28,4], [-68,22,3], [-68,22,-3]], type: 'front' },
+            { verts: [[-42,28.3,-4], [-68,22.3,-3], [-68,22.3,3], [-42,28.3,4]], type: 'back' },
+        ],
+        foldLine: [[-42,28,-5], [-42,28,5]],
+    },
+    // --- Step 6: Tail (reverse fold up on right) ---
+    {
+        faces: [
+            // Body (slightly shorter)
+            { verts: [[-30,0,-8], [16,0,-8], [16,0,8], [-30,0,8]], type: 'front' },
+            { verts: [[-30,0.3,-8], [-30,0.3,8], [16,0.3,8], [16,0.3,-8]], type: 'back' },
+            // Neck
+            { verts: [[-30,0,-5], [-30,0,5], [-42,28,3], [-42,28,-3]], type: 'fold' },
+            { verts: [[-30,0.3,-5], [-42,28.3,-3], [-42,28.3,3], [-30,0.3,5]], type: 'fold' },
+            // Head
+            { verts: [[-42,28,-4], [-42,28,4], [-68,22,3], [-68,22,-3]], type: 'front' },
+            { verts: [[-42,28.3,-4], [-68,22.3,-3], [-68,22.3,3], [-42,28.3,4]], type: 'back' },
+            // Tail (going up)
+            { verts: [[16,0,-3], [16,0,3], [28,30,1], [28,30,-1]], type: 'fold' },
+        ],
+        foldLine: [[16,0,-8], [16,0,8]],
+    },
+    // --- Step 7: Legs ---
+    {
+        faces: [
+            // Body
+            { verts: [[-30,0,-8], [16,0,-8], [16,0,8], [-30,0,8]], type: 'front' },
+            { verts: [[-30,0.3,-8], [-30,0.3,8], [16,0.3,8], [16,0.3,-8]], type: 'back' },
+            // Neck
+            { verts: [[-30,0,-5], [-30,0,5], [-42,28,3], [-42,28,-3]], type: 'fold' },
+            { verts: [[-30,0.3,-5], [-42,28.3,-3], [-42,28.3,3], [-30,0.3,5]], type: 'fold' },
+            // Head
+            { verts: [[-42,28,-4], [-42,28,4], [-68,22,3], [-68,22,-3]], type: 'front' },
+            { verts: [[-42,28.3,-4], [-68,22.3,-3], [-68,22.3,3], [-42,28.3,4]], type: 'back' },
+            // Tail
+            { verts: [[16,0,-3], [16,0,3], [28,30,1], [28,30,-1]], type: 'fold' },
+            // Front legs
+            { verts: [[-24,0,-8], [-24,-20,-8], [-18,-20,-8], [-18,0,-8]], type: 'fold' },
+            { verts: [[-24,0,8], [-18,0,8], [-18,-20,8], [-24,-20,8]], type: 'fold' },
+            // Rear legs
+            { verts: [[6,0,-8], [6,-20,-8], [12,-20,-8], [12,0,-8]], type: 'fold' },
+            { verts: [[6,0,8], [12,0,8], [12,-20,8], [6,-20,8]], type: 'fold' },
+        ],
+        foldLine: null,
+    },
+    // --- Step 8: Final with details ---
+    {
+        faces: [
+            // Body
+            { verts: [[-30,0,-8], [16,0,-8], [16,0,8], [-30,0,8]], type: 'front' },
+            { verts: [[-30,0.3,-8], [-30,0.3,8], [16,0.3,8], [16,0.3,-8]], type: 'back' },
+            // Neck
+            { verts: [[-30,0,-5], [-30,0,5], [-42,28,3], [-42,28,-3]], type: 'fold' },
+            { verts: [[-30,0.3,-5], [-42,28.3,-3], [-42,28.3,3], [-30,0.3,5]], type: 'fold' },
+            // Head
+            { verts: [[-42,28,-4], [-42,28,4], [-68,22,3], [-68,22,-3]], type: 'front' },
+            { verts: [[-42,28.3,-4], [-68,22.3,-3], [-68,22.3,3], [-42,28.3,4]], type: 'back' },
+            // Tail
+            { verts: [[16,0,-3], [16,0,3], [28,30,1], [28,30,-1]], type: 'fold' },
+            // Front legs
+            { verts: [[-24,0,-8], [-24,-20,-8], [-18,-20,-8], [-18,0,-8]], type: 'fold' },
+            { verts: [[-24,0,8], [-18,0,8], [-18,-20,8], [-24,-20,8]], type: 'fold' },
+            // Rear legs
+            { verts: [[6,0,-8], [6,-20,-8], [12,-20,-8], [12,0,-8]], type: 'fold' },
+            { verts: [[6,0,8], [12,0,8], [12,-20,8], [6,-20,8]], type: 'fold' },
+        ],
+        foldLine: null,
+        decorations: [
+            // Eye
+            { shape: 'sphere', radius: 2.5, position: [-55, 26, -5], color: '#2d2926' },
+            { shape: 'sphere', radius: 0.8, position: [-54, 27, -5.5], color: '#ffffff' },
+            // Nose
+            { shape: 'ellipse', rx: 2.5, ry: 1.8, rz: 1.5, position: [-67, 23, 0], color: '#2d2926' },
+            // Ear (small triangle as a sphere proxy)
+            { shape: 'sphere', radius: 3, position: [-48, 32, -3], color: '#dcc8b0' },
+            // Collar
+            { shape: 'ellipse', rx: 4, ry: 1.5, rz: 4, position: [-33, 10, 0], color: '#e57373' },
+        ],
+    },
+];
 
-    function replayAnimation(stepNum) {
-        const svg = document.getElementById('anim' + stepNum);
-        if (!svg) return;
-        const parent = svg.parentNode;
-        const clone = svg.cloneNode(true);
-        clone.id = 'anim' + stepNum;
-        parent.replaceChild(clone, svg);
-    }
+new OrigamiEngine({
+    steps: dachshundSteps,
+    frontColor: '#f5e6d3',
+    backColor: '#dcc8b0',
+    foldColor: '#e8d5be',
+    accentColor: '#6b4c9a',
+    sceneBg: '#f5f2f8',
+});
 </script>
 
 </body>
